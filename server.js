@@ -9,7 +9,14 @@ import { login, signup } from "./db/auth.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN_ALLOWED_HOST.split(","),
+  methods: ["GET", "POST"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const server = http.createServer(app);
@@ -113,9 +120,8 @@ app.post("/signup", async (req, res) => {
     }
 
     const jwtResponse = generateJwtTokenResponse(result.userId, username, name);
-    res.status(201).json(jwtResponse);
+    return res.status(200).json(jwtResponse);
   } catch (error) {
-    console.error("Error:", error.message);
     return res.status(500).json({ message: "An error occurred during signup" });
   }
 });

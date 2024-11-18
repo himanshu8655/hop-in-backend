@@ -24,7 +24,7 @@ export const login = async (username, password) => {
     try {
       const existingUser = await db.collection("users").findOne({ username });
       if (existingUser) {
-        throw new Error("Username already exists");
+        return { success: false, message: "Username already exists" };
       }
   
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,7 +35,11 @@ export const login = async (username, password) => {
         name,
       });
   
-      return { userId: result.insertedId };
+      if (!result.insertedId) {
+        return { success: false, message: "Error creating user" };
+      }
+  
+      return { success: true, userId: result.insertedId };
     } catch (err) {
       console.error("Signup error:", err.message);
       return { success: false, message: err.message };
