@@ -1,4 +1,4 @@
-import db from "../db/connection";
+import db from "../db/auth"
 import bcrypt from "bcryptjs";
 
 export const login = async (username, password) => {
