@@ -1,8 +1,8 @@
-import authService from '../services/authService';
-import { generateJwtTokenResponse } from '../server';
+import authService from '../services/authService.js';
+import app from '../app.js';
 
-
-exports.signup = async (req, res) => {
+const authController = {
+signupHandler: async (req, res) => {
   const { username, password, name } = req.body;
 
   try {
@@ -12,14 +12,14 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: result.message });
     }
 
-    const jwtResponse = generateJwtTokenResponse(result.userId, username, name);
+    const jwtResponse = app.generateJwtTokenResponse(result.userId, username, name);
     return res.status(200).json(jwtResponse);
   } catch (error) {
     return res.status(500).json({ message: "An error occurred during signup" });
   }
-};
+},
 
-app.post("/login", async (req, res) => {
+loginHandler: async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -29,7 +29,7 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const jwtResponse = generateJwtTokenResponse(
+    const jwtResponse = app.generateJwtTokenResponse(
       user.userId,
       username,
       user.name
@@ -39,4 +39,7 @@ app.post("/login", async (req, res) => {
     console.error("Login error:", error.message);
     return res.status(500).json({ message: "An error occurred during login" });
   }
-});
+},
+};
+
+export default authController;
