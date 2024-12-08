@@ -5,6 +5,7 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
+import hopinRoutes from "./routes/hopin.routes.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,7 +18,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/auth', authRoutes);
-// app.use('/hopin',hopinRoutes);
+app.use('/hopin',hopinRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

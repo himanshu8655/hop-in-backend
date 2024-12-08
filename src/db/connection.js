@@ -1,17 +1,16 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
-import {} from "dotenv/config";
+import mongoose from 'mongoose';
+import {} from 'dotenv/config';
 
 const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
+
 try {
-await client.connect();
-await client.db("hop_in").command({ ping: 1 });
-console.log(
-"Pinged your deployment. You successfully connected to MongoDB!"
-);
-} catch(err) {
-console.error(err);
+    await mongoose.connect(uri, {});
+    console.log("Connected to MongoDB via Mongoose!");
+} catch (err) {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
 }
-let db = client.db("hop_in");
+
+const db = mongoose.connection;
 
 export default db;

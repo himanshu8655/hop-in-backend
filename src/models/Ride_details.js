@@ -1,30 +1,51 @@
 import mongoose from 'mongoose';
-import Counter from 'Counter.js';
+import Counter from './Counter.js';
 
 const RideDetailsSchema = new mongoose.Schema({
-    ride_id: {type: Number, unique: true},
-    carpool_owner: {type: Number, required: true},
-    start_location: {type: String, required: true,min: -90, max: 90},
-    end_location: {type: String, required: true,min: -180, max: 180},
-    status: {type: String, required: true},
-    commuter_id: {type: [String], default: []},
-    message_id: {type: Number, unique: true},
-    created: {type: Date, default: Date.now}
+    ride_id: { type: Number, unique: true },
+    carpool_owner: { type: Number, required: true },
+    start_location: {
+        type: { type: String, enum: ['Point'], required: true },
+        coordinates: { type: [Number], required: true },
+    },
+    end_location: {
+        type: { type: String, enum: ['Point'], required: true },
+        coordinates: { type: [Number], required: true },
+    },
+    start_time: { type: Date, required: true },
+    is_active: { type: String, required: true },
+    commuter_id: { type: [String], default: [] },
+    seat_available: { type: String, required: true },
+    created: { type: Date, default: Date.now },
 });
 
-rideDetailsSchema.pre('save', async function (next) {
-    if (this.isNew) {
-        const counter = await Counter.findOneAndUpdate(
-            { modelName: 'ride_details' },
-            { $inc: { seq: 1 } },
-            { new: true, upsert: true }
-        );
-        this.ride_id = counter.seq;
-        this.message_id = counter.seq;
+RideDetailsSchema.index({ ride_id: 1 });
+RideDetailsSchema.index({ start_location: '2dsphere' });
+RideDetailsSchema.index({ end_location: '2dsphere' });
+
+RideDetailsSchema.pre('save', async function (next) {
+    // if (this.isNew) {
+    //     const counter = await Counter.findOneAndUpdate(
+    //         { modelName: 'ride_details' },
+    //         { $inc: { seq: 1 } },
+    //         { new: true, upsert: true }
+    //     );
+    //     this.ride_id = counter.seq;
+    // }
+    // next();
+    const new_ride = this;
+    if(new_ride.isNew){
+        try{
+            const lastride = await mongoose.model('ride_details').findOne().sort({ ride_id: -1 }).exec();
+            new_ride.ride_id = lastride ? lastride.ride_id + 1: 1;
+        } catch (error){
+            next(error);
+        }
+    }else{
+        next();
     }
-    next();
 });
 
-const RideDet = mongoose.model('ride_details', RideDeTailsSchema);
+const RideDet = mongoose.model('ride_details', RideDetailsSchema);
 
-module.exports = RideDet;
+export default RideDet;
