@@ -4,5 +4,6 @@ const router = express.Router();
 
 router.post('/carpool',hopinController.carpool);
 router.post('/joincarpool',hopinController.joincarpool);
+router.post('/getroutes',hopinController.maproute);
 
 export default router;
