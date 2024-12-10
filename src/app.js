@@ -115,7 +115,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const generateJwtTokenResponse = (userId, userName, name) => {
+export const generateJwtTokenResponse = (userId, userName, name) => {
     const token = jwt.sign({ id: userId }, JWT_SECRET, {
       expiresIn: "1h",
     });
