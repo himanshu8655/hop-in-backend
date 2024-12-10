@@ -1,5 +1,6 @@
 import db from "../db/connection.js"
 import bcrypt from "bcryptjs";
+import User from "../models/User.js"
 
 const authService = {
   login: async (username, password) => {
@@ -21,31 +22,41 @@ const authService = {
       }
   },
 
-  signup: async (username, password, name) => {
+  signup: async (body) => {
     try {
-      const existingUser = await db.collection("users").findOne({ username });
+      console.log("email",body.email);
+       const existingUser = await db.collection("users").findOne({ email: body.email });
       if (existingUser) {
         return { success: false, message: "Username already exists" };
       }
   
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(body.password, 10);
   
-      const result = await db.collection("users").insertOne({
-        username,
-        password: hashedPassword,
-        name,
+      // const result = await db.collection("users").insertOne({
+      //   username,
+      //   password: hashedPassword,
+      //   name,
+      // });
+     const User_new = new User({
+          firstname: body.firstName,
+          lastname: body.lastName,
+          email: body.email,
+          password: hashedPassword,
+          contact_no: Number(body.contact_no),
+          is_admin: 0,
       });
-  
-      if (!result.insertedId) {
+      const savedUser = User_new.save();
+      if (!savedUser) {
         return { success: false, message: "Error creating user" };
       }
   
-      return { success: true, userId: result.insertedId };
+      return { success: true, userId: User.uid, message: "User Created" };
     } catch (err) {
       console.error("Signup error:", err.message);
       return { success: false, message: err.message };
     }
   },
+
 };
 
 export default authService;
