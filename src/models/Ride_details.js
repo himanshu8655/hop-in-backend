@@ -14,7 +14,7 @@ const RideDetailsSchema = new mongoose.Schema({
     },
     start_time: { type: Date, required: true },
     is_active: { type: String, required: true },
-    commuter_id: { type: [String], default: [] },
+    commuter_id: { type: [Number], default: [] },
     seat_available: { type: String, required: true },
     created: { type: Date, default: Date.now },
 });
