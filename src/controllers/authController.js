@@ -1,5 +1,5 @@
 import authService from '../services/authService.js';
-import app from '../app.js';
+import app, {generateJwtTokenResponse} from '../app.js';
 
 const authController = {
 signupHandler: async (req, res) => {
@@ -18,19 +18,18 @@ signupHandler: async (req, res) => {
 },
 
 loginHandler: async (req, res) => {
-  const { username, password } = req.body;
 
   try {
-    const user = await authService.login(username, password);
+    const user = await authService.login(req.body);
 
-    if (!user || !user.userId) {
+    if (!user || !user.uid) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const jwtResponse = app.generateJwtTokenResponse(
-      user.userId,
-      username,
-      user.name
+    const jwtResponse = generateJwtTokenResponse(
+      user.uid,
+      req.body.email,
+      user.firstname
     );
     return res.status(200).json(jwtResponse);
   } catch (error) {
