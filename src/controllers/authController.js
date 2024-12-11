@@ -20,19 +20,17 @@ signupHandler: async (req, res) => {
 },
 
 loginHandler: async (req, res) => {
-  const { username, password } = req.body;
-
   try {
-    const user = await authService.login(username, password);
-
-    if (!user || !user.userId) {
+    const user = await authService.login(req.body);
+    console.log('loginHandler',user);
+    if (!user || !user.uid) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const jwtResponse = app.generateJwtTokenResponse(
-      user.userId,
-      username,
-      user.name
+      user.uid,
+      user.email,
+      user.firstname
     );
     return res.status(200).json(jwtResponse);
   } catch (error) {

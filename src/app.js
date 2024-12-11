@@ -37,7 +37,7 @@ const io = new Server(server, {
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const PORT = process.env.PORT || 3000;
 
-const authenticateJWT = (req, res, next) => {
+export const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(" ")[1];
@@ -115,7 +115,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const generateJwtTokenResponse = (userId, userName, name) => {
+export const generateJwtTokenResponse = (userId, userName, name) => {
     const token = jwt.sign({ id: userId }, JWT_SECRET, {
       expiresIn: "1h",
     });
