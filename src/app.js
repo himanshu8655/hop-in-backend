@@ -115,15 +115,15 @@ io.on("connection", (socket) => {
   });
 });
 
-export const generateJwtTokenResponse = (userId, userName, name) => {
+export const generateJwtTokenResponse = (userId, email, firstname) => {
     const token = jwt.sign({ id: userId }, JWT_SECRET, {
       expiresIn: "1h",
     });
     const res = {
+      uid: userId,
       token: token,
-      userId: userId,
-      name: name,
-      userName: userName,
+      email: email,
+      firstname: firstname,
     };
     return res;
 };
