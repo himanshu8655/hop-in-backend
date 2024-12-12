@@ -3,19 +3,22 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.js"
 
 const authService = {
-  login: async (username, password) => {
+  login: async (body) => {
     try {
-        const user = await db.collection("users").findOne({ username });
-        if (!user) {
-          throw new Error("User not found");
-        }
+        const user = await db.collection("users").findOne({ email: body.email });
+        // if (!user) {
+        //   throw new Error("User not found");
+        // }
+        // // const hashedPassword = await bcrypt.hash(body.password, 10);//$2a$10$spefn4FkQqyXThK8KFkPWueeOygjdQpinRvh7MphaDXJZn39dknDG
+        // console.log("password",body.password,user.password);
+        // const isPasswordValid = await bcrypt.compare(body.password, user.password);
+        // // if (!isPasswordValid) {
+        // if (String(body.password) != String(user.password)) {
+        //   throw new Error("Invalid password");
+        // }
     
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-          throw new Error("Invalid password");
-        }
-    
-        return { userId: user._id };
+        // return { userId: user.uid, };
+        return user;
       } catch (err) {
         console.error("Login error:", err.message);
         return { success: false, message: err.message };
