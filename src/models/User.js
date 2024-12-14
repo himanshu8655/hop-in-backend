@@ -13,17 +13,28 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next) {
-    if (this.isNew) {
-        const counter = await Counter.findOneAndUpdate(
-            { modelName: 'user' },
-            { $inc: { seq: 1 } },
-            { new: true, upsert: true }
-        );
-        this.uid = counter.seq;
+    // if (this.isNew) {
+    //     const counter = await Counter.findOneAndUpdate(
+    //         { modelName: 'user' },
+    //         { $inc: { seq: 1 } },
+    //         { new: true, upsert: true }
+    //     );
+    //     this.uid = counter.seq;
+    // }
+    // next();
+    const new_user = this;
+    if(new_user.isNew){
+        try{
+            const lastuser = await mongoose.model('users').findOne().sort({ uid: -1 }).exec();
+            new_user.uid = lastuser ? lastuser.uid + 1: 1;
+        } catch (error){
+            next(error);
+        }
+    }else{
+        next();
     }
-    next();
 });
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('users', userSchema);
 
 export default User;
