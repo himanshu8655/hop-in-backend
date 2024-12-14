@@ -29,7 +29,7 @@ const hopinService = {
             coordinates: [body.end_long, body.end_lat],
           },
           start_time: new Date(),
-          is_active: "1",
+          is_active: "0",
           seat_available: body.no_of_seats,
         });
         const savedRideDetails = await newRideDetails.save();
@@ -190,6 +190,41 @@ const hopinService = {
       return {
         success: false,
         message: "An error occurred while fetching reviews.",
+      };
+    }
+  },
+  activeride: async (body) => {
+    try{
+        if(body.uid){
+            const fetch_ride = await RideDet.findOne({is_active: "1",$or:[{carpool_owner: body.uid},{commuter_id: body.uid}]}).sort({$natural: -1}).exec();
+            return fetch_ride;
+        } else{
+            return "Cannot fecth Ride";
+        }
+    } catch(error){
+        console.error("Active Ride Error:", error.message);
+      return {
+        success: false,
+        message: "An error occurred while fetching ride details",
+      };
+    }
+  },
+  updateridestatus: async (body) => {
+    try{
+        if(body.ride_status && body.ride_id) {
+            const update_ride = RideDet.updateOne(
+                { ride_id: body.ride_id },
+                { $set: { is_active: ride_status } }
+            ).exec();
+            return "Ride updated";
+        }else{
+            return "Necesaary information required to upate ride"
+        }
+    } catch (error){
+        console.error("Ride Status Error:", error.message);
+      return {
+        success: false,
+        message: "An error occurred while updating ride status",
       };
     }
   },
