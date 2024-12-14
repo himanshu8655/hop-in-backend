@@ -29,7 +29,7 @@ const hopinService = {
                 console.log('savedRideDetails',savedRideDetails);
                 const key_message = savedRideDetails.ride_id+"_"+Date.now();
                 let message_json_arr = { 
-                    [key_message] : "Hello Commuters to your carpoo, journey"
+                    [key_message] : "Hello Commuters to your carpool, journey"
                 };
                 const messageNew = new MessagesSch({
                     message_json: JSON.stringify(message_json_arr),

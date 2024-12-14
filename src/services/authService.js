@@ -6,7 +6,6 @@ const authService = {
   login: async (body) => {
     try {
         const user = await db.collection("users").findOne({ email: body.email });
-        console.log(user,"=====")
         if (!user) {
           throw new Error("User not found");
         }
