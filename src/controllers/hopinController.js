@@ -27,6 +27,30 @@ const hopinController = {
             return res.status(500).json({success: false, message: error.message});
         }
     },
+
+    writeReview: async (req, res) => {
+        try {
+          const result = await hopinService.writeReview(req.body);
+          if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message });
+          }
+          return res.status(200).json({ success: true, message: result.message });
+        } catch (error) {
+          return res.status(500).json({ success: false, message: error.message });
+        }
+      },
+
+      getReviewsGiven: async (req, res) => {
+        try {
+          const result = await hopinService.getReviewsGiven(req.body.user_id);
+          if (!result.success) {
+            return res.status(404).json({ success: false, message: result.message });
+          }
+          return res.status(200).json({ success: true, data: result.data });
+        } catch (error) {
+          return res.status(500).json({ success: false, message: error.message });
+        }
+      },
 };
 
 export default hopinController;

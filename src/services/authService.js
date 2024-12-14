@@ -58,7 +58,31 @@ const authService = {
       return { success: false, message: err.message };
     }
   },
+  
+  updatePassword: async (email, newPassword) => {
+    try {
+      const user = await db.collection("users").findOne({ email });
 
+      if (!user) {
+        return { success: false, message: "User not found" };
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      const updateResult = await db.collection("users").updateOne(
+        { email },
+        { $set: { password: hashedPassword } }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        return { success: false, message: "Failed to update password" };
+      }
+
+      return { success: true, message: "Password updated successfully" };
+    } catch (err) {
+      console.error("Update password error:", err.message);
+      return { success: false, message: err.message };
+    }
+  },
 };
-
 export default authService;
