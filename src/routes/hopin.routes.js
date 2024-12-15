@@ -9,5 +9,6 @@ router.post('/review',hopinController.writeReview);
 router.post('/getreview',hopinController.getReviewsGiven);
 router.post('/activeride',hopinController.activeride);
 router.post('/ridestatus',hopinController.updateridestatus);
+router.post('/ridehistory',hopinController.ridehistory);
 
 export default router;

@@ -228,6 +228,22 @@ const hopinService = {
       };
     }
   },
+  ridehistory: async (body) => {
+    try {
+        if(body.uid){
+            const ride_history = await RideDet.find({$or:[{carpool_owner:body.uid},{commuter_id:body.uid}]}).exec();
+            return ride_history;
+        }else{
+            return "Provide user id to get ride histpry of user"
+        }
+    } catch (error){
+        console.error("Ride History Error:", error.message);
+      return {
+        success: false,
+        message: "An error occurred while getting ride history",
+      };
+    }
+  }
 };
 
 export default hopinService;
