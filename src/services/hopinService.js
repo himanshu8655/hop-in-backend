@@ -75,7 +75,7 @@ const hopinService = {
               $centerSphere: [[body.end_long, body.end_lat], radiusInRadians],
             },
           },
-          is_active: 1,
+          is_active: 0,
           seat_available: { $gte: 1 },
         }).exec();
         let return_data = "";
@@ -196,7 +196,7 @@ const hopinService = {
   activeride: async (body) => {
     try{
         if(body.uid){
-            const fetch_ride = await RideDet.findOne({is_active: "1",$or:[{carpool_owner: body.uid},{commuter_id: body.uid}]}).sort({$natural: -1}).exec();
+            const fetch_ride = await RideDet.findOne({is_active: {$in: ["0","1"]},$or:[{carpool_owner: body.uid},{commuter_id: body.uid}]}).sort({$natural: -1}).exec();
             return fetch_ride;
         } else{
             return "Cannot fecth Ride";
