@@ -214,7 +214,7 @@ const hopinService = {
         if(body.ride_status && body.ride_id) {
             const update_ride = RideDet.updateOne(
                 { ride_id: body.ride_id },
-                { $set: { is_active: ride_status } }
+                { $set: { is_active: body.ride_status } }
             ).exec();
             return "Ride updated";
         }else{
