@@ -18,32 +18,38 @@ const hopinService = {
         body.end_lat &&
         body.end_long
       ) {
-        const newRideDetails = new RideDet({
-          carpool_owner: body.uid,
-          start_location: {
-            type: "Point",
-            coordinates: [body.start_long, body.start_lat],
-          },
-          end_location: {
-            type: "Point",
-            coordinates: [body.end_long, body.end_lat],
-          },
-          start_time: new Date(),
-          is_active: "0",
-          seat_available: body.no_of_seats,
-        });
-        const savedRideDetails = await newRideDetails.save();
-        console.log("savedRideDetails", savedRideDetails);
-        const key_message = savedRideDetails.ride_id + "_" + Date.now();
-        let message_json_arr = {
-          [key_message]: "Hello Commuters to your carpool, journey",
-        };
-        const messageNew = new MessagesSch({
-          message_json: JSON.stringify(message_json_arr),
-          ride_id: savedRideDetails.ride_id,
-        });
-        const mesaage_new_save = messageNew.save();
-        return "New carpool created";
+        const fetch_ride = await RideDet.findOne({is_active: {$in: ["0","1"]},$or:[{carpool_owner: body.uid}]}).sort({$natural: -1}).exec();
+        console.log('fecth_ride',fetch_ride);
+        if(!fetch_ride){
+          const newRideDetails = new RideDet({
+            carpool_owner: body.uid,
+            start_location: {
+              type: "Point",
+              coordinates: [body.start_long, body.start_lat],
+            },
+            end_location: {
+              type: "Point",
+              coordinates: [body.end_long, body.end_lat],
+            },
+            start_time: new Date(),
+            is_active: "0",
+            seat_available: body.no_of_seats,
+          });
+          const savedRideDetails = await newRideDetails.save();
+          console.log("savedRideDetails", savedRideDetails);
+          const key_message = savedRideDetails.ride_id + "_" + Date.now();
+          let message_json_arr = {
+            [key_message]: "Hello Commuters to your carpool, journey",
+          };
+          const messageNew = new MessagesSch({
+            message_json: JSON.stringify(message_json_arr),
+            ride_id: savedRideDetails.ride_id,
+          });
+          const mesaage_new_save = messageNew.save();
+          return "New carpool created";
+        } else{
+          return "One carpool already active";
+        }
       } else {
         return "Ride can not be created";
       }
@@ -81,10 +87,11 @@ const hopinService = {
         let return_data = "";
         if (findrides.length >= 1) {
           let commuter_id_new = findrides[0]["commuter_id"];
+          let seats_avaialble = Number(findrides[0]["seat_available"]) - 1;
           commuter_id_new.push(Number(body.uid));
           const update_ride = RideDet.updateOne(
             { ride_id: findrides[0]["ride_id"] },
-            { $set: { commuter_id: commuter_id_new } }
+            { $set: { commuter_id: commuter_id_new, seat_available: seats_avaialble} }
           ).exec();
           findrides[0]["commuter_id"] = commuter_id_new;
           return_data = findrides[0];
