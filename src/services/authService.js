@@ -7,7 +7,7 @@ const authService = {
     try {
         const user = await db.collection("users").findOne({ email: body.email });
         if (!user) {
-          throw new Error("User not found");
+          return { success: false, message: "User not found" }
         }
         // const hashedPassword = await bcrypt.hash(body.password, 10);
         // console.log('login',hashedPassword,user.password);
@@ -19,7 +19,7 @@ const authService = {
     
         return user;
       } catch (err) {
-        console.error("Login error:", err.message);
+        // console.error("Login error:", err.message);
         return { success: false, message: err.message };
       }
   },
